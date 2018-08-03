@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>封装轮播图</title>
+    <style>
+
+        ul ,ol{
+                   list-style: none;
+               }
+        .active{
+            background-color: white;
+            box-shadow: 0 0 3px 5px rgba(255,255,255,.5);
+        }
+        span:hover{
+            background-color: rgba(0,0,0,.8) ;
+        }
+
+    </style>
+</head>
+<body>
+<div class="box1"></div>
+<div class="box2"></div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<script>
+    var data1 =[
+        'img/1.jpg',
+        'img/2.jpg',
+        'img/3.jpg',
+        'img/4.jpg',
+        'img/5.jpg'
+    ];
+    var data2 =[
+        'imgs/1.jpg',
+        'imgs/2.jpg',
+        'imgs/3.jpg',
+        'imgs/4.jpg',
+        'imgs/5.jpg',
+        'imgs/6.jpg',
+        'imgs/7.jpg',
+        'imgs/8.jpg',
+        'imgs/9.jpg',
+        'imgs/10.jpg',
+        'imgs/11.jpg',
+        'imgs/12.jpg',
+        'imgs/13.jpg',
+        'imgs/14.jpg',
+        'imgs/15.jpg',
+        'imgs/16.jpg',
+        'imgs/17.jpg',
+        'imgs/18.jpg'
+    ];
+    $.fn.extend({
+        //先绑定页面元素
+        lunbo:function (option) {
+            var delay = option.delay || 2000;
+            var width = option.width || 500;
+            var height = option.height || 500;
+            // console.log(data);
+            //先拼接页面元素
+
+           var ulLi = '';
+           var olLi = '';
+           for(var i = 0; i < option.data.length; i ++){
+               ulLi += '<li><img src="'+option.data[i]+'" alt=""></li>';
+               olLi += '<li></li>'
+           }
+            var $ul = $('<ul>'+ulLi+'</ul>') ;
+            var spans = ' <span class="prve"><</span>' +' <span class="next">></span>';
+            var $ol = $('<ol>'+olLi+'</ol>') ;
+            $(this).append($ul).append(spans).append($ol);
+            //拼接样式
+            $(this).css({
+                width:  width,
+                height: height,
+                border: ' 1px solid #cccccc',
+                margin: '50px auto',
+                position: ' relative'
+            });
+            $(this).children('ul').children('li').css({
+                width:'100%',
+                height:'100%'
+            });
+            $(this).children('ul').children('li').children('img').css({
+                width:'100%',
+                height:'100%'
+            });
+
+           $(this).children('ul').children().css({
+                position: 'absolute',
+                left: 0,
+                top: 0,
+               display:'none'
+            });
+            $(this).children('span').css({
+                position: 'absolute',
+                width: 30,
+                height: 60,
+                backgroundColor: 'rgba(0,0,0,.5)',
+                color: 'white',
+                fontSize:'30px' ,
+                textAlign:' center',
+                lineHeight: '60px',
+                top:'50%',
+                marginTop: '-30px',
+                cursor: 'pointer'
+            });
+            $(this).children('span').eq(0).css('left',0);
+            $(this).children('span').eq(1).css('right',0);
+           $(this).children('ol').css({
+                position: 'absolute',
+                bottom:'30px',
+                left:' 50px'
+            });
+            $(this).children('ol').children('li').css({
+                float: 'left',
+                width: 15,
+                height: 15,
+                border: '1px solid rgba(255,255,255,.5)',
+                borderRadius: 15,
+                marginRight: 10
+            });
+            var $ulLi = $(this).children('ul').children();
+            var $olLi = $(this).children('ol').children();
+            $(this).children('ul').children().eq(0).show();
+            $(this).children('ol').children().eq(0).addClass('active');
+            function play() {
+                index = index > option.data.length-1? 0 : index;
+                index = index < 0? option.data.length-1 : index;
+                $ulLi.eq(index).fadeIn().siblings().fadeOut();
+                $olLi.eq(index).addClass('active').siblings().removeClass('active');
+            }
+            var index = 0;
+            //增加定时器，让图片广告自动播放
+            var timer = null;
+            timer  = setInterval(function () {
+                index++;
+                play();
+            },delay);
+            //鼠标hover事件，清除定时器
+            $(this).hover(function () {
+                clearInterval(timer);
+            },function () {
+                timer  = setInterval(function () {
+                    index++;
+                    play();
+                },delay)
+            })
+            //上一张
+            $(this).children('span').eq(0).click(function () {
+                index--;
+                play();
+            })
+            //下一张
+            $(this).children('span').eq(1).click(function () {
+                index++;
+                play();
+            })
+            //小圆点事件
+            $($olLi).mouseenter(function () {
+                index = $(this).index();
+                play();
+            })
+
+        }
+    })
+    $('.box1').lunbo({
+        data:data1,
+        delay:3000,
+        width: 500,
+        height: 300,
+    });
+    $('.box2').lunbo({
+        data:data2,
+        delay:1000,
+        width:600,
+        height:400
+    });
+
+
+</script>
+</html>
